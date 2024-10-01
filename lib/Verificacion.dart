@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
+import 'VCode.dart'; // Importa la pantalla VCode (OTP)
+import 'Login.dart'; // Importa la pantalla de login
 
 class Verificacion extends StatelessWidget {
   @override
@@ -60,7 +62,7 @@ class Verificacion extends StatelessWidget {
             ),
             SizedBox(height: screenHeight * 0.02),
 
-            // Campo de número de teléfono con selección de código de país
+            // Campo de número de teléfono
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 20),
               child: IntlPhoneField(
@@ -77,17 +79,23 @@ class Verificacion extends StatelessWidget {
                 },
               ),
             ),
-
             SizedBox(height: screenHeight * 0.05),
 
-            // Botón "Get Started"
+            // Botón "Get Started" con color verde
             Container(
               width: screenWidth * 0.8,
               height: screenHeight * 0.08,
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  // Navegar a la pantalla VCode
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => VCode()),
+                  );
+                },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
+                  backgroundColor:
+                      Colors.green, // Mismo color que el botón de Login
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
@@ -95,7 +103,7 @@ class Verificacion extends StatelessWidget {
                 child: Text(
                   'Get Started',
                   style: TextStyle(
-                    color: Colors.black,
+                    color: Colors.white,
                     fontSize: screenHeight * 0.025,
                     fontFamily: 'Poppins',
                   ),
@@ -104,40 +112,39 @@ class Verificacion extends StatelessWidget {
             ),
             SizedBox(height: screenHeight * 0.05),
 
-            // Texto "Ya tienes cuenta? Login here"
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Ya tienes cuenta?',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: screenHeight * 0.02,
-                    fontFamily: 'Poppins',
-                    color: Colors.black,
-                  ),
+            // Texto para login
+            GestureDetector(
+              onTap: () {
+                // Navegar a la pantalla de Login
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          Login()), // Aquí navega a la pantalla Login
+                );
+              },
+              child: RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: 'Ya tienes cuenta? ',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: screenHeight * 0.02,
+                        fontFamily: 'Poppins',
+                      ),
+                    ),
+                    TextSpan(
+                      text: 'Login',
+                      style: TextStyle(
+                        color: Color(0xFF07FFE1),
+                        fontSize: screenHeight * 0.02,
+                        fontFamily: 'Poppins',
+                      ),
+                    ),
+                  ],
                 ),
-                SizedBox(width: screenWidth * 0.02),
-                Text(
-                  'Login',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: screenHeight * 0.02,
-                    fontFamily: 'Poppins',
-                    color: Color(0xFF07FFE1),
-                  ),
-                ),
-                SizedBox(width: screenWidth * 0.01),
-                Text(
-                  'here',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: screenHeight * 0.02,
-                    fontFamily: 'Poppins',
-                    color: Colors.black,
-                  ),
-                ),
-              ],
+              ),
             ),
           ],
         ),
