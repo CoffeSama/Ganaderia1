@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'Perfil.dart'; // Pantalla de perfil (User Profile)
+import 'Perfil.dart'; // Importa correctamente la pantalla Perfil
 
-// HomeScreen, la pantalla principal donde se muestran las categorías
 class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -13,93 +12,107 @@ class Home extends StatelessWidget {
         width: double.infinity,
         height: double.infinity,
         decoration: _buildBackgroundGradient(),
-        child: Stack(
+        child: Column(
           children: [
-            _buildUserProfileIcon(context),
-            _buildSearchBar(screenWidth),
-            _buildCategoryGrid(screenWidth),
-            _buildBottomNavigationBar(),
-          ],
-        ),
-      ),
-    );
-  }
+            // Espacio superior
+            SizedBox(height: 40),
 
-  // Función que construye el ícono de perfil en la esquina superior derecha
-  Widget _buildUserProfileIcon(BuildContext context) {
-    return Positioned(
-      top: 40,
-      right: 20,
-      child: GestureDetector(
-        onTap: () {
-          // Navegar a la pantalla de perfil
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => Perfil()),
-          );
-        },
-        child: CircleAvatar(
-          radius: 40,
-          backgroundImage: NetworkImage(
-              "https://picsum.photos/200"), // Placeholder para la imagen del usuario
-          backgroundColor: Colors.transparent,
-        ),
-      ),
-    );
-  }
-
-  // Función que construye la barra de búsqueda
-  Widget _buildSearchBar(double screenWidth) {
-    return Positioned(
-      left: 26,
-      top: 83,
-      child: Container(
-        width: screenWidth * 0.9,
-        height: 40,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.black),
-        ),
-        child: Row(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Icon(Icons.search, color: Colors.grey),
-            ),
-            Text(
-              'Search any categories',
-              style: TextStyle(
-                color: Colors.black.withOpacity(0.6),
-                fontSize: 15,
-                fontFamily: 'Poppins',
+            // Ícono de perfil en la parte superior derecha
+            Align(
+              alignment: Alignment.topRight,
+              child: GestureDetector(
+                onTap: () {
+                  // Navegar a la pantalla de perfil
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Perfil()), // Navegación correcta a Perfil
+                  );
+                },
+                child: CircleAvatar(
+                  radius: 40,
+                  backgroundImage: NetworkImage("https://picsum.photos/200"),
+                  backgroundColor: Colors.transparent,
+                ),
               ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
 
-  // Función que construye la cuadrícula de categorías
-  Widget _buildCategoryGrid(double screenWidth) {
-    return Positioned(
-      left: 20,
-      top: 150,
-      child: Container(
-        width: screenWidth * 0.9,
-        child: GridView.count(
-          shrinkWrap: true,
-          crossAxisCount: 2,
-          crossAxisSpacing: 20,
-          mainAxisSpacing: 20,
-          children: [
-            _buildCategoryCard('Pesticidas', 'https://picsum.photos/100'),
-            _buildCategoryCard('Animales', 'https://picsum.photos/100'),
-            _buildCategoryCard('Alimento', 'https://picsum.photos/100'),
-            _buildCategoryCard('Semillas', 'https://picsum.photos/100'),
-            _buildCategoryCard('Remates', 'https://picsum.photos/100'),
-            _buildCategoryCard('Servicios', 'https://picsum.photos/100'),
+            // Espacio entre el ícono de perfil y la barra de búsqueda
+            SizedBox(height: 20),
+
+            // Barra de búsqueda
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 26.0),
+              child: Container(
+                width: screenWidth * 0.9,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Colors.black),
+                ),
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Icon(Icons.search, color: Colors.grey),
+                    ),
+                    Text(
+                      'Search any categories',
+                      style: TextStyle(
+                        color: Colors.black.withOpacity(0.6),
+                        fontSize: 15,
+                        fontFamily: 'Poppins',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            // Espacio entre la barra de búsqueda y la cuadrícula
+            SizedBox(height: 20),
+
+            // Cuadrícula de categorías
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: GridView.count(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 20,
+                  mainAxisSpacing: 20,
+                  children: [
+                    _buildCategoryCard('Pesticidas', 'https://picsum.photos/100'),
+                    _buildCategoryCard('Animales', 'https://picsum.photos/100'),
+                    _buildCategoryCard('Alimento', 'https://picsum.photos/100'),
+                    _buildCategoryCard('Semillas', 'https://picsum.photos/100'),
+                    _buildCategoryCard('Remates', 'https://picsum.photos/100'),
+                    _buildCategoryCard('Servicios', 'https://picsum.photos/100'),
+                  ],
+                ),
+              ),
+            ),
+
+            // Barra de navegación inferior
+            Container(
+              width: double.infinity,
+              height: 60,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Icon(Icons.home, color: Colors.black, size: 30),
+                  Icon(Icons.category, color: Colors.black, size: 30),
+                  Icon(Icons.shopping_cart, color: Colors.black, size: 30),
+                  Icon(Icons.person, color: Colors.black, size: 30),
+                ],
+              ),
+            ),
           ],
         ),
       ),
@@ -138,34 +151,6 @@ class Home extends StatelessWidget {
     );
   }
 
-  // Función que construye la barra de navegación inferior
-  Widget _buildBottomNavigationBar() {
-    return Positioned(
-      left: 0,
-      bottom: 0,
-      child: Container(
-        width: double.infinity,
-        height: 60,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Icon(Icons.home, color: Colors.black, size: 30),
-            Icon(Icons.category, color: Colors.black, size: 30),
-            Icon(Icons.shopping_cart, color: Colors.black, size: 30),
-            Icon(Icons.person, color: Colors.black, size: 30),
-          ],
-        ),
-      ),
-    );
-  }
-
   // Función que construye el fondo degradado
   BoxDecoration _buildBackgroundGradient() {
     return BoxDecoration(
@@ -181,7 +166,6 @@ class Home extends StatelessWidget {
           Color(0xFF6D7939),
         ],
       ),
-      borderRadius: BorderRadius.circular(50),
     );
   }
 }

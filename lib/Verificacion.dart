@@ -1,9 +1,79 @@
 import 'package:flutter/material.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
-import 'VCode.dart'; // Importa la pantalla VCode (OTP)
-import 'Login.dart'; // Importa la pantalla de login
+import 'package:firebase_auth/firebase_auth.dart';
+import 'VCode.dart';
+import 'Login.dart';
 
-class Verificacion extends StatelessWidget {
+class Verificacion extends StatefulWidget {
+  @override
+  _VerificacionState createState() => _VerificacionState();
+}
+
+class _VerificacionState extends State<Verificacion> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  String _verificationId = '';
+  String _phoneNumber = '';
+  bool _isLoading = false;
+
+  // Método para enviar el OTP al número ingresado
+  Future<void> _sendOTP() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      await _auth.verifyPhoneNumber(
+        phoneNumber: _phoneNumber,
+        verificationCompleted: (PhoneAuthCredential credential) async {
+          await _auth.signInWithCredential(credential);
+        },
+        verificationFailed: (FirebaseAuthException e) {
+          setState(() {
+            _isLoading = false;
+          });
+
+          // Mostrar mensajes de error específicos
+          String errorMsg;
+          if (e.code == 'invalid-phone-number') {
+            errorMsg = 'Número de teléfono no válido.';
+          } else {
+            errorMsg = 'Error al enviar OTP: ${e.message}';
+          }
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(errorMsg)),
+          );
+        },
+        codeSent: (String verificationId, int? resendToken) {
+          setState(() {
+            _verificationId = verificationId;
+            _isLoading = false;
+          });
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => VCode(verificationId: verificationId),
+            ),
+          );
+        },
+        codeAutoRetrievalTimeout: (String verificationId) {
+          setState(() {
+            _verificationId = verificationId;
+          });
+        },
+        timeout: Duration(seconds: 60),
+      );
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al intentar enviar OTP: $e')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -30,7 +100,6 @@ class Verificacion extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Imagen de verificación
             Container(
               width: screenWidth * 0.8,
               height: screenHeight * 0.3,
@@ -49,8 +118,6 @@ class Verificacion extends StatelessWidget {
               ),
             ),
             SizedBox(height: screenHeight * 0.05),
-
-            // Texto de "Enter your Mobile Number"
             Text(
               'Enter your Mobile Number',
               textAlign: TextAlign.center,
@@ -61,8 +128,6 @@ class Verificacion extends StatelessWidget {
               ),
             ),
             SizedBox(height: screenHeight * 0.02),
-
-            // Campo de número de teléfono
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 20),
               child: IntlPhoneField(
@@ -75,52 +140,48 @@ class Verificacion extends StatelessWidget {
                 ),
                 initialCountryCode: 'BO',
                 onChanged: (phone) {
-                  print(phone.completeNumber);
+                  setState(() {
+                    _phoneNumber = phone.completeNumber;
+                  });
                 },
               ),
             ),
             SizedBox(height: screenHeight * 0.05),
-
-            // Botón "Get Started" con color verde
             Container(
               width: screenWidth * 0.8,
               height: screenHeight * 0.08,
               child: ElevatedButton(
-                onPressed: () {
-                  // Navegar a la pantalla VCode
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => VCode()),
-                  );
-                },
+                onPressed: _phoneNumber.isNotEmpty && !_isLoading
+                    ? () {
+                        _sendOTP();
+                      }
+                    : null,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      Colors.green, // Mismo color que el botón de Login
+                  backgroundColor: Colors.green,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
                 ),
-                child: Text(
-                  'Get Started',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: screenHeight * 0.025,
-                    fontFamily: 'Poppins',
-                  ),
-                ),
+                child: _isLoading
+                    ? CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      )
+                    : Text(
+                        'Get Started',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: screenHeight * 0.025,
+                          fontFamily: 'Poppins',
+                        ),
+                      ),
               ),
             ),
             SizedBox(height: screenHeight * 0.05),
-
-            // Texto para login
             GestureDetector(
               onTap: () {
-                // Navegar a la pantalla de Login
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          Login()), // Aquí navega a la pantalla Login
+                  MaterialPageRoute(builder: (context) => Login()),
                 );
               },
               child: RichText(

@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
-import 'started.dart'; // Importar el archivo started.dart
+import 'package:firebase_core/firebase_core.dart'; // Importa Firebase Core
+import 'firebase_options.dart'; // Importa el archivo generado de configuración de Firebase
+import 'started.dart'; // Importa el archivo started.dart
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // Asegura que Flutter esté inicializado correctamente
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform, // Usa las opciones correctas según la plataforma
+  );
   runApp(const MyApp());
 }
 

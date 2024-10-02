@@ -1,13 +1,58 @@
 import 'package:flutter/material.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Importa Firebase Auth
 import 'CreateA.dart'; // Asegúrate de importar la pantalla CreateA
 
-class VCode extends StatelessWidget {
+class VCode extends StatefulWidget {
+  final String verificationId; // Recibe la verificación ID
+
+  VCode({required this.verificationId});
+
+  @override
+  _VCodeState createState() => _VCodeState();
+}
+
+class _VCodeState extends State<VCode> {
+  String currentOTP = ""; // Almacenar el OTP ingresado por el usuario
+  bool isLoading = false; // Controlar el estado de carga
+
+  // Método para verificar el OTP
+  Future<void> _verifyOTP() async {
+    setState(() {
+      isLoading = true; // Mostrar un indicador de carga
+    });
+
+    try {
+      // Crear credencial usando el OTP y el verificationId
+      PhoneAuthCredential credential = PhoneAuthProvider.credential(
+        verificationId: widget.verificationId,
+        smsCode: currentOTP,
+      );
+
+      // Iniciar sesión con la credencial
+      await FirebaseAuth.instance.signInWithCredential(credential);
+
+      // Si el OTP es correcto, navegar a CreateA
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => CreateA()),
+      );
+    } on FirebaseAuthException catch (e) {
+      // Mostrar un mensaje de error si el OTP es incorrecto
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al verificar el OTP: ${e.message}')),
+      );
+    } finally {
+      setState(() {
+        isLoading = false; // Dejar de mostrar el indicador de carga
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
-    String currentOTP = ""; // Almacenar el OTP
 
     return Scaffold(
       body: Container(
@@ -60,9 +105,11 @@ class VCode extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: PinCodeTextField(
                 appContext: context,
-                length: 4, // Longitud del OTP
+                length: 6, // Cambiar la longitud del OTP a 6
                 onChanged: (value) {
-                  currentOTP = value;
+                  setState(() {
+                    currentOTP = value; // Actualizar el valor del OTP
+                  });
                 },
                 pinTheme: PinTheme(
                   shape: PinCodeFieldShape.box,
@@ -98,15 +145,13 @@ class VCode extends StatelessWidget {
             ),
             SizedBox(height: screenHeight * 0.05),
 
-            // Botón "Confirmar" que navega a CreateA
+            // Botón "Confirmar" que verifica el OTP
             ElevatedButton(
-              onPressed: () {
-                // Navegar a la pantalla CreateA cuando se confirme el OTP
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => CreateA()),
-                );
-              },
+              onPressed: currentOTP.length == 6 && !isLoading
+                  ? () {
+                      _verifyOTP(); // Verificar el OTP cuando se presiona el botón
+                    }
+                  : null, // Desactivar el botón si el OTP no está completo
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green,
                 shape: RoundedRectangleBorder(
@@ -115,13 +160,17 @@ class VCode extends StatelessWidget {
                 padding: EdgeInsets.symmetric(
                     horizontal: screenWidth * 0.3, vertical: 15),
               ),
-              child: Text(
-                'Confirm',
-                style: TextStyle(
-                  fontSize: screenHeight * 0.025,
-                  color: Colors.white,
-                ),
-              ),
+              child: isLoading
+                  ? CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    )
+                  : Text(
+                      'Confirm',
+                      style: TextStyle(
+                        fontSize: screenHeight * 0.025,
+                        color: Colors.white,
+                      ),
+                    ),
             ),
           ],
         ),
