@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1067430482171",
+    "project_id": "ganaderia-c769e",
+    "storage_bucket": "ganaderia-c769e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1067430482171:android:779a619600b39f43ea605e",
+        "android_client_info": {
+          "package_name": "com.example.ganaderia"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCtko7UEqhf8RbNG6v5g_d29d3I6mj2_AE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
